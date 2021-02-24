@@ -1,0 +1,5 @@
+[db]
+db2a1.sb.com dbset=sample
+
+[auditmaster]
+db2host
