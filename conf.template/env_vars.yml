@@ -4,3 +4,5 @@ datapath: dataaudit
 archivepath: archaudit
 auditpolicyname: audit_validate
 auditpolicyspec: categories validate status both
+audithost: db2host
+tempkey: /tmp/id_rsa.pub
