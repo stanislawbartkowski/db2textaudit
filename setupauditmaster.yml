@@ -1,0 +1,27 @@
+- name: "Create master db2audit user"
+  hosts: auditmaster
+  user: root
+
+  vars_files:
+    - conf/env_vars.yml
+    - conf/env_db.yml
+
+  tasks:
+
+  - include: play/createmasteraudit.yml
+  
+- name: "Distribute public key and stup passwordless connection"
+  hosts: db
+  user: root
+  become_user: '{{audituser}}'
+  become: true
+  become_method: su
+  become_flags: "-"
+
+  vars_files:
+    - conf/env_vars.yml
+    - conf/env_db.yml
+
+  tasks:
+
+  - include: play/passwordless.yml

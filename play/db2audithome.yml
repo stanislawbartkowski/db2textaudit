@@ -1,0 +1,4 @@
+- name: Get home directory of {{audituser}} user
+  shell: >
+    getent passwd {{ audituser }}  | awk -F: '{ print $6 }'
+  register: user_home

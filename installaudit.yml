@@ -1,10 +1,13 @@
 - name: "Create db2audit user"
-  hosts: all
+  hosts: db
   user: root
 
   vars_files:
     - conf/env_vars.yml
     - conf/env_db.yml
+
+  vars:
+    dblist: '{{dbset}}'
 
   tasks:
 
@@ -18,8 +21,8 @@
 
   - include: play/grantaudituser.yml
     name: "Elevate {{ audituser}} in databases "
-    with_list: '{{ databases }}'
+    with_list: '{{ dblist }}'
 
   - include: play/setupauditpolicy.yml
     name: "Configure audit policy in databases"
-    with_list: '{{ databases }}'
+    with_list: '{{ dblist }}'

@@ -1,0 +1,16 @@
+- name: Create {{ audituser}} and ssh keys
+  user:
+    name: '{{audituser}}'
+    generate_ssh_key: yes
+
+- include: db2audithome.yml
+
+- name: Copy shh public key 
+  fetch:
+    src: '{{user_home.stdout}}/.ssh/id_rsa.pub'
+    dest: '{{tempkey}}'
+    flat: yes
+  register: out
+
+- debug:
+    var: out
