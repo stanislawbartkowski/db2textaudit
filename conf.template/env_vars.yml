@@ -1,0 +1,6 @@
+audituser: db2audit
+instanceuser: db2inst1
+datapath: dataaudit
+archivepath: archaudit
+auditpolicyname: audit_validate
+auditpolicyspec: categories validate status both

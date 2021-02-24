@@ -1,0 +1,15 @@
+- name: Create {{ audituser}} user
+  user:
+    name: '{{ audituser }}'
+
+- include: db2homedir.yml
+
+- name: "Add {{instanceuser}} sourcing to {{audituser}} .bash.rc file"
+  become_user: '{{audituser}}'
+  become: true
+  become_method: su
+  become_flags: "-"
+  lineinfile:
+    state: present
+    path: .bashrc
+    line: 'source {{user_home.stdout}}/sqllib/db2profile'

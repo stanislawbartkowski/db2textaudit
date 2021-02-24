@@ -1,0 +1,14 @@
+- name: "Create audit directory {{datapath}}"
+  ansible.builtin.file:
+    path: '{{user_home.stdout}}/{{datapath}}'
+    state: directory
+    mode: '0700'
+
+- name: "Create audit directory {{archivepath}}"
+  ansible.builtin.file:
+    path: '{{user_home.stdout}}/{{archivepath}}'
+    state: directory
+    mode: '0700'    
+
+- name: "Configure audit directories in DB2 instance"
+  shell: 'db2audit configure datapath {{user_home.stdout}}/{{datapath}} archivepath {{user_home.stdout}}/{{archivepath}}'
