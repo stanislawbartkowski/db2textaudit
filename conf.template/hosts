@@ -1,1 +1,5 @@
+[auditmaster]
+db2host
+
+[db]
 db2a1.sb.com
