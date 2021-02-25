@@ -2,4 +2,4 @@
 db2a1.sb.com dbset=sample auditdir=dba
 
 [auditmaster]
-db2host
+db2host.sb.coms
