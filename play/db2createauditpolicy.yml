@@ -1,0 +1,8 @@
+- name: Create DB2 script file {{ temp_file }}
+  copy:
+    dest: '{{ temp_file.path }}'
+    content: |
+      connect to {{item}};
+      create audit policy {{auditpolicyname}} {{auditpolicyspec}} ERROR TYPE NORMAL;
+      AUDIT database USING POLICY {{auditpolicyname}};
+      terminate;

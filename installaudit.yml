@@ -23,6 +23,9 @@
     name: "Elevate {{ audituser}} in databases "
     with_list: '{{ dblist }}'
 
-  - include: play/setupauditpolicy.yml
+  - include: play/runremotescript.yml
+    vars:
+      db2include: db2createauditpolicy.yml
+      ignoredb2errors : true
     name: "Configure audit policy in databases"
     with_list: '{{ dblist }}'
