@@ -10,5 +10,13 @@
 
   tasks:
 
-  - name: "Echo"    
-    shell: ls 
+  - fail: msg="auditdir variable not defined"
+    when: auditdir is not defined
+
+  - include: play/runremotescript.yml
+    vars:
+      db2include: db2verifyauditpolicies.yml
+      ignoredb2errors : false
+      db2auditbecome: false
+    name: "Configure audit policy in databases"
+    with_list: '{{ dblist }}'

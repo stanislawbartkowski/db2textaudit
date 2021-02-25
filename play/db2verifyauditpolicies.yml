@@ -1,0 +1,8 @@
+- name: Create DB2 script file {{ temp_file }} to verfify AUDITPOLICIES
+  copy:
+    dest: '{{ temp_file.path }}'
+    content: |
+      connect to {{item}};
+      select * from SYSCAT.AUDITPOLICIES WHERE auditpolicyname = UPPER('{{auditpolicyname}}');
+      select * from SYSCAT.AUDITUSE WHERE auditpolicyname = UPPER('{{auditpolicyname}}');
+      terminate;

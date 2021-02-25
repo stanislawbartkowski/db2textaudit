@@ -1,0 +1,24 @@
+- name: "Verify audit on hosts"
+  hosts: db
+
+  vars_files:
+    - conf/env_vars.yml
+    - conf/env_db.yml
+
+  vars:
+    dblist: '{{dbset}}'
+
+  tasks:
+
+  - name: Test var
+    shell: 'echo "{{inventory_hostname}} {{auditdir}}"'
+    register: out
+    with_list: '{{ dblist }}'
+
+  - name: "echo"
+    debug:
+      var: out
+
+
+
+

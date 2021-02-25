@@ -27,5 +27,6 @@
     vars:
       db2include: db2createauditpolicy.yml
       ignoredb2errors : true
+      db2auditbecome: true
     name: "Configure audit policy in databases"
     with_list: '{{ dblist }}'

@@ -1,0 +1,23 @@
+- tempfile:
+    state: directory
+    suffix: audit
+  register: temp_audit_dir
+
+- name: Make {{temp_audit_dir.path}} available for db2inst1
+  ansible.builtin.file:
+    path: '{{temp_audit_dir.path}}'
+    mode: u+rwx,g+rwx,o+rwx
+
+- name:
+  debug: 
+    var: temp_audit_dir
+
+- name: Create DB2 script file {{ temp_file.path }} to verfify AUDITPOLICIES
+  copy:
+    dest: '{{ temp_file.path }}'
+    content: |
+      connect to {{item}};      
+      CALL SYSPROC.AUDIT_ARCHIVE(NULL, NULL);
+      CALL SYSPROC.AUDIT_DELIM_EXTRACT(NULL, '{{temp_audit_dir.path}}', NULL, NULL, NULL);
+      terminate;
+

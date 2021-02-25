@@ -1,0 +1,47 @@
+- name: "Collect audit logs"
+  hosts: db
+
+  vars_files:
+    - conf/env_vars.yml
+    - conf/env_db.yml
+
+  vars:
+    dblist: '{{dbset}}'
+
+  tasks:
+
+  - fail: msg="auditdir variable not defined"
+    when: auditdir is not defined
+
+  - include: play/runremotescript.yml
+    vars:
+      db2include: db2auditarchive.yml
+      ignoredb2errors : false
+      db2auditbecome: false
+    name: "Run AUDIT_ARCHIVE command"
+    with_list: '{{ dblist }}'
+
+ 
+  - name: Downloading audit files from remote {{temp_audit_dir.path}} to local{{auditlogroot}}/{{auditdir}}/{{inventory_hostname}}/{{instanceuser}}
+    find: 
+      paths: '{{temp_audit_dir.path}}' 
+      recurse: no 
+    register: files_to_copy
+
+  - name: "debug"
+    debug:
+      var: files_to_copy
+
+  - name: "Fetch remote files"
+    fetch: 
+      src: '{{ item.path }}' 
+      dest: '{{auditlogroot}}/{{auditdir}}/{{inventory_hostname}}/{{instanceuser}}/'
+      flat: yes
+    with_items: '{{ files_to_copy.files }}'
+    register: out
+
+  - name: "debug"
+    debug:
+      var: out
+
+   

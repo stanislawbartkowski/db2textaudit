@@ -1,6 +1,6 @@
 - name: Create temporary file to run a script
   become_user: '{{audituser}}'
-  become: true
+  become: '{{db2auditbecome}}'
   become_method: su
   become_flags: "-"
 
@@ -14,7 +14,7 @@
 - name: Execute the script
   shell: 'db2 -tvf {{ temp_file.path }}'
   become_user: '{{audituser}}'
-  become: true
+  become: '{{db2auditbecome}}'
   become_method: su
   become_flags: "-"
   ignore_errors: '{{ignoredb2errors}}'
