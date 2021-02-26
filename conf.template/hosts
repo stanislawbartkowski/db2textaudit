@@ -1,5 +1,7 @@
 [db]
 db2a1.sb.com dbset=sample auditdir=dba
+db2a2.sb.com dbset=sample auditdir=dba
+db2a2.sb.com dbset=sample auditdir=dba
 
 [auditmaster]
 db2host.sb.coms
