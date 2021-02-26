@@ -27,5 +27,38 @@ Ansible tool is installed on *Provisioning node* and *Audit master node*. No add
 * Privileged access to DB2 instance nodes is necessary only to activate DB2 auditing and setting up the passwordless connection between *Audit master node* and DB2 instance nodes. 
 * To collect audit data, passwordless connection from *Audit master node* to DB instance node is used. The connection is between *db2audit* users only and the *db2audit* user on DB2 instance node is not privileged. It is authorized only to run DB2 audit related commands and cannot execute any action outside DB2 audit scope and does not have any access to DB2 tables and data.
 
-# 
+# Configuration
+
+> git clone \<url\> <br>
+> cd \<directory\>
+> mkdir conf<br>
+> cp conf.template/* conf/<br>
+> cp conf.template/hosts hosts<br>
+
+Configure *conf/env_db.yml* and *hosts*. *conf/env_vars.yml* comes with predefined variables, for instance: the name of *db2audit* user, can be customized if necessary.<br>
+
+# List of databases, *conf/env_db.yml*
+
+The file contains a list of databases to be monitored. DB2 audit feature is enabled at the database level and every database 
+
+# Ansible inventory, *hosts* file
+
+Example:<br>
+```
+[db]
+db2a1.sb.com dbset=sample auditdir=dba
+db2a2.sb.com dbset=sample auditdir=dba
+db2a2.sb.com dbset=sample auditdir=dba
+
+[auditmaster]
+db2host.sb.coms
+```
+
+Inventory group *db* specifies the list of DB2 instances where DB2 audit facility is to be enabled. *auditmaster* is the hostname of *Audit master node*.<br>
+
+
+
+
+
+
 
