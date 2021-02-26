@@ -20,6 +20,24 @@ Three type of nodes:<br>
 * Audit master node. The configuration task creates a *db2audit* user on this node. The *db2audit* user has a passwordless connection with *db2audit* user on DB2 nodes and is authorized to run DB2 audit-related command. The *db2audit* user does not have access to DB2 tables and data and is not allowed to execute any action outside auditing.
 * DB2 instances under monitoring.
 
+Collected audit log files are stored on the *Audit master node* in the directory:<br>
+
+\<auditlogroot\>/\<auditdir\>/\<DB2 hostname\>/\<db2 instance owner\><br>
+  
+Example:
+* auditlog/dba/db2a1.sb.com/db2inst1 
+  * audit.del
+  * auditlobs
+  * checking.del
+  * context.del
+  * execute.del
+  * objmaint.del
+  * secmaint.del
+  * sysadmin.del
+  * validate.del
+
+The log files are stored as text delimited CSV files. Data can be loaded into database or analyzed using text searching tool.
+
 Ansible tool is installed on *Provisioning node* and *Audit master node*. No additional dependency is required on DB2 instance nodes.
 
 # Security
@@ -35,11 +53,21 @@ Ansible tool is installed on *Provisioning node* and *Audit master node*. No add
 > cp conf.template/* conf/<br>
 > cp conf.template/hosts hosts<br>
 
-Configure *conf/env_db.yml* and *hosts*. *conf/env_vars.yml* comes with predefined variables, for instance: the name of *db2audit* user, can be customized if necessary.<br>
+Configure *conf/env_db.yml* and *hosts*. 
+<br>
+In *conf/env_vars.yml* modify the value of *audithost* variable to keep the *Audit master node* hostname.<br>
 
 # List of databases, *conf/env_db.yml*
 
-The file contains a list of databases to be monitored. DB2 audit feature is enabled at the database level and every database 
+The file contains a list of databases to be monitored. DB2 audit feature is enabled at the database level and every database. Example:<br>
+
+```YML
+sample:
+  - SAMPLE
+samplebank:
+  - SAMPLE
+  - BANK
+```
 
 # Ansible inventory, *hosts* file
 
@@ -47,14 +75,27 @@ Example:<br>
 ```
 [db]
 db2a1.sb.com dbset=sample auditdir=dba
-db2a2.sb.com dbset=sample auditdir=dba
-db2a2.sb.com dbset=sample auditdir=dba
+db2a2.sb.com dbset=samplebank auditdir=dbabank
+db2a3.sb.com dbset=sample auditdir=dba
 
 [auditmaster]
 db2host.sb.coms
 ```
 
 Inventory group *db* specifies the list of DB2 instances where DB2 audit facility is to be enabled. *auditmaster* is the hostname of *Audit master node*.<br>
+
+Every host in *[db]* group has two additional variables defined.
+* *dbset* A key in *conf/env_db.yml* file giving the list of databases to be monitored.
+* *auditdir* Subdirectory name in the collected audit logs allowing a group of nodes to be clustered together.
+
+In the example below:<br>
+
+DB2 nodes *db2a1.sb.com* and *db2a3.sb.com* contains a single database SAMPLE to be monitored. The audit log files will be stored in the following directory structure.<br>
+* auditlog/dba/db2a1.sb.com/db2inst1 
+* auditlog/dba/db2a3.sb.com/db2inst1 
+
+DB2 node *db2a2.sb.com* contains two databases: *SAMPLE* and *BANK* to be monitored. The audit log files for this node will be stored:<br>
+* auditlog/dbabank/db2a2.sb.com/db2inst1 
 
 
 
