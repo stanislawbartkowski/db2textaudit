@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------------------------
+# Create audit policy for database
+# Run for audituser
+# Run for every databases
+# Executed for the second time will report failure "Already created" as expected
+# ------------------------------------------------------------------------------------
+- name: Create DB2 script file {{ temp_file }}
+  copy:
+    dest: '{{ temp_file.path }}'
+    content: |
+      connect to {{item}};
+      create audit policy {{auditpolicyname}} {{auditpolicyspec}} ERROR TYPE NORMAL;
+      AUDIT database USING POLICY {{auditpolicyname}};
+      terminate;
+
+- name: Execute the script for database {{ item }}
+  shell: 'db2 -tvf {{ temp_file.path }}'
+  ignore_errors: true
+
+

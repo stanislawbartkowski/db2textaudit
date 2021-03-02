@@ -1,0 +1,17 @@
+- name: Create temporary file to run a script
+  ansible.builtin.tempfile:
+    state: file
+    suffix: temp
+  register: temp_file
+
+- name: List of databases
+  include: listdbdirectory.yml
+
+- name: Run script for all databases
+  include: "{{include_script}}"
+  with_items: "{{dblist.stdout_lines}}"
+
+- name: Remove temporary fule
+  ansible.builtin.file:
+    path: '{{ temp_file.path }}'
+    state: absent

@@ -4,29 +4,35 @@
 
   vars_files:
     - conf/env_vars.yml
-    - conf/env_db.yml
-
-  vars:
-    dblist: '{{dbset}}'
 
   tasks:
 
-  - include: play/createaudituser.yml
+  - include: play/grantaudit/createaudituser.yml
 
-  - include: play/createauditpolicy.yml
+  - include: play/grantaudit/createauditpolicy.yml
     become_user: '{{instanceuser}}'
     become: true
     become_method: su
     become_flags: "-"
 
-  - include: play/grantaudituser.yml
-    name: "Elevate {{ audituser}} in databases "
-    with_list: '{{ dblist }}'
+  - name: Grant SECADM authority to {{audituser}} for every database
+    include: play/tools/runscriptfordatabases.yml
+    vars: 
+      include_script: ../grantaudit/grantaudit.yml
+    become_user: '{{instanceuser}}'
+    become: true
+    become_method: su
+    become_flags: "-"
 
-  - include: play/runremotescript.yml
-    vars:
-      db2include: db2createauditpolicy.yml
-      ignoredb2errors : true
-      db2auditbecome: true
-    name: "Configure audit policy in databases"
-    with_list: '{{ dblist }}'
+  - name: Create audit policy for every database
+    include: play/tools/runscriptfordatabases.yml
+    vars: 
+      include_script: ../grantaudit/auditpolicy.yml
+    become_user: '{{audituser}}'
+    become: true
+    become_method: su
+    become_flags: "-"
+
+
+
+

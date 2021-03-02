@@ -1,8 +1,13 @@
+# --------------------------------------
+# create db2audit, audit user
+# Run as root
+# ---------------------------------------
+
 - name: Create {{ audituser}} user
   user:
     name: '{{ audituser }}'
 
-- include: db2homedir.yml
+- include: ../tools/db2homedir.yml
 
 - name: "Add {{instanceuser}} sourcing to {{audituser}} .bash.rc file"
   become_user: '{{audituser}}'

@@ -1,3 +1,8 @@
+# -----------------------------------------------
+# Create audit policy at the instance level
+# Run as db2inst1 (instance owner)
+# -----------------------------------------------
+
 - name: "Create audit directory {{datapath}}"
   ansible.builtin.file:
     path: '{{user_home.stdout}}/{{datapath}}'

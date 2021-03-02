@@ -1,0 +1,4 @@
+- name: List of databases
+  shell: >
+     db2 list db directory | grep alias | cut -d "=" -f 2
+  register: dblist
