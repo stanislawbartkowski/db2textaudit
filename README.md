@@ -22,7 +22,7 @@ Three types of nodes:<br>
 
 Collected audit log files are stored on the *Audit master node* in the directory:<br>
 
-\<auditlogroot\>/\<auditdir\>/\<DB2 hostname\>/\<db2 instance owner\><br>
+\<auditlogroot\>/\<auditdir\>/\<DB2 hostname\>/\<db2 instance owner\>\<database\><br>
   
 Example:
 * auditlog/dba/db2a1.sb.com/db2inst1 
@@ -53,30 +53,18 @@ The log files are stored as text delimited CSV files. Data can be loaded into a 
 > cp conf.template/* conf/<br>
 > cp conf.template/hosts hosts<br>
 
-Configure *conf/env_db.yml* and *hosts*. 
+Configure *conf/env_vars.yml* and *hosts*. 
 <br>
 In *conf/env_vars.yml* modify the value of *audithost* variable to keep the *Audit master node* hostname.<br>
-
-# List of databases, *conf/env_db.yml*
-
-The file contains a list of databases to be monitored. DB2 audit feature is enabled at the database level and every database. Example:<br>
-
-```YML
-sample:
-  - SAMPLE
-samplebank:
-  - SAMPLE
-  - BANK
-```
 
 # Ansible inventory, *hosts* file
 
 Example:<br>
 ```
 [db]
-db2a1.sb.com dbset=sample auditdir=dba
-db2a2.sb.com dbset=samplebank auditdir=dbabank
-db2a3.sb.com dbset=sample auditdir=dba
+db2a1.sb.com auditdir=dba
+db2a2.sb.com auditdir=dbabank
+db2a3.sb.com auditdir=dba
 
 [auditmaster]
 db2host.sb.coms
@@ -85,19 +73,19 @@ db2host.sb.coms
 Inventory group *db* specifies the list of DB2 instances where DB2 audit facility is to be enabled. *auditmaster* is the hostname of *Audit master node*.<br>
 
 Every host in *[db]* group has two additional variables defined.
-* *dbset* A key in *conf/env_db.yml* file giving the list of databases to be monitored.
 * *auditdir* Subdirectory name in the collected audit logs allowing a group of nodes to be clustered together.
 
 Using the example above:<br>
 
 DB2 nodes *db2a1.sb.com* and *db2a3.sb.com* contain a single database SAMPLE to be monitored. The audit log files will be stored in the following directory structure.<br>
 
-* auditlog/dba/db2a1.sb.com/db2inst1 
-* auditlog/dba/db2a3.sb.com/db2inst1 
+* auditlog/dba/db2a1.sb.com/db2inst1/SAMPLE
+* auditlog/dba/db2a3.sb.com/db2inst1/SAMPLE
 
 DB2 node *db2a2.sb.com* contains two databases: *SAMPLE* and *BANK* to be monitored. The audit log files for this node will be stored:<br>
 
-* auditlog/dbabank/db2a2.sb.com/db2inst1 
+* auditlog/dbabank/db2a2.sb.com/db2inst1/SAMPLE
+* auditlog/dbabank/db2a2.sb.com/db2inst1/BANK
 
 # Running the tool
 
@@ -105,7 +93,7 @@ DB2 node *db2a2.sb.com* contains two databases: *SAMPLE* and *BANK* to be monito
 
 Run this task as privilege user on a *Provision node*.
 
-Configure *conf/env_vars.yml*, *env/env_db.yml* and *hosts* inventory file.
+Configure *conf/env_vars.yml* and *hosts* inventory file.
 
 > ansible-playbook -i hosts installaudit.yml <br>
 
@@ -141,7 +129,3 @@ The following action is executed on every DB2 instance node.<br>
   *  \<auditlogroot\>/\<auditdir\>/\<DB2 hostname\>/\<db2 instance owner\> 
 
 The task is tranfering all log data available from DB2 instances to *Audit master node* and is rewriting the existing content of audit directory on *Audit master node*. 
-
-
-
-
