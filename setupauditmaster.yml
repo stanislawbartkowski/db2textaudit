@@ -13,7 +13,7 @@
 
   - include: play/setupmaster/createmasteraudit.yml
   
-- name: "Distribute public key and stup passwordless connection"
+- name: "Distribute public key and setup passwordless connection"
   hosts: db
   user: root
   become_user: '{{audituser}}'
@@ -26,4 +26,4 @@
   
   tasks:
 
-  - include: play//setupmaster/passwordless.yml
+  - include: play/setupmaster/passwordless.yml
