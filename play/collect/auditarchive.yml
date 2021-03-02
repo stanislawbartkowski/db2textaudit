@@ -1,0 +1,53 @@
+# ----------------------------------------------------------------------------------------
+# Run AUDIT_ARCHIVE command and extract audit file to /tmp directory in delim format
+# Run as audituser
+# /tmp directory is 777, should writable by db2inst1 user, instance owner
+# ----------------------------------------------------------------------------------------
+
+- tempfile:
+    state: directory
+    suffix: audit
+  register: temp_audit_dir
+
+- name: Make {{temp_audit_dir.path}} available for db2inst1
+  ansible.builtin.file:
+    path: '{{temp_audit_dir.path}}'
+    mode: u+rwx,g+rwx,o+rwx
+
+- name:
+  debug: 
+    var: temp_audit_dir
+  when: false
+
+- name: Create DB2 script file {{ temp_file.path }} to extract log data from {{audit}}
+  copy:
+    dest: '{{ temp_file.path }}'
+    content: |
+      connect to {{item}};      
+      CALL SYSPROC.AUDIT_ARCHIVE(NULL, NULL);
+      CALL SYSPROC.AUDIT_DELIM_EXTRACT(NULL, '{{temp_audit_dir.path}}', NULL, NULL, NULL);
+      terminate;
+
+- name: Execute the script for database {{ item }}
+  shell: 'db2 -tvf {{ temp_file.path }}'
+
+- name: List files in {{temp_audit_dir.path}} 
+  find: 
+    paths: '{{temp_audit_dir.path}}' 
+    recurse: no 
+  register: files_to_copy
+
+- name: "debug"
+  debug:
+    var: files_to_copy
+
+- name: "Fetch remote files to '{{auditlogroot}}/{{auditdir}}/{{inventory_hostname}}/{{instanceuser}}/{{item}}'"
+  fetch: 
+    src: '{{itemfile.path}}' 
+    dest: '{{auditlogroot}}/{{auditdir}}/{{inventory_hostname}}/{{instanceuser}}/{{item}}/'
+    flat: yes
+  with_items: '{{ files_to_copy.files }}'
+  loop_control:
+    loop_var: itemfile
+  register: out
+

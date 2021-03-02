@@ -9,7 +9,7 @@
 
 - name: Run script for all databases
   include: "{{include_script}}"
-  with_items: "{{dblist.stdout_lines}}"
+  with_items: "{{dblist.stdout_lines | map('trim') | list }}"
 
 - name: Remove temporary fule
   ansible.builtin.file:

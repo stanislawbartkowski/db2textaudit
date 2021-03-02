@@ -1,3 +1,7 @@
+# ----------------------------------
+# Execute script on Privilege node
+# ----------------------------------
+
 - name: "Create master db2audit user"
   hosts: auditmaster
   user: root

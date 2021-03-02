@@ -1,3 +1,9 @@
+# -------------------------------------------------------------------------
+# Create audituser on Audit master node and generate ssh_keys
+# Fetch public key from remote audit user DB2 instance to /tmp directory
+# This pub key should be picked up by next task
+# -------------------------------------------------------------------------
+
 - name: Create {{ audituser}} and ssh keys
   user:
     name: '{{audituser}}'
