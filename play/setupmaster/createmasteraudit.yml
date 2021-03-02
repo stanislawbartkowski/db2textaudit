@@ -3,7 +3,7 @@
     name: '{{audituser}}'
     generate_ssh_key: yes
 
-- include: db2audithome.yml
+- include: ../tools/db2audithome.yml
 
 - name: Copy shh public key 
   fetch:
