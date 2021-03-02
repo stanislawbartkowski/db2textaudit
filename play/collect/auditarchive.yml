@@ -19,7 +19,7 @@
     var: temp_audit_dir
   when: false
 
-- name: Create DB2 script file {{ temp_file.path }} to extract log data from {{audit}}
+- name: "Create DB2 script file {{ temp_file.path }} to extract audit data from databse {{item}}"
   copy:
     dest: '{{ temp_file.path }}'
     content: |
@@ -40,6 +40,7 @@
 - name: "debug"
   debug:
     var: files_to_copy
+  when: false
 
 - name: "Fetch remote files to '{{auditlogroot}}/{{auditdir}}/{{inventory_hostname}}/{{instanceuser}}/{{item}}'"
   fetch: 
@@ -51,3 +52,7 @@
     loop_var: itemfile
   register: out
 
+- name: Remove temporary directory {{temp_audit_dir.path}}
+  ansible.builtin.file:
+    path: '{{temp_audit_dir.path}}'
+    state: absent
